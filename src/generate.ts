@@ -1,7 +1,7 @@
 import Jimp from 'jimp';
 import KDBush from 'kdbush';
 import { getColorFromPalette, rgbToInt } from './colors';
-import { radius, tileSizePx, discrete } from './settings';
+import { radius, tileSizePx, discrete, power } from './settings';
 import { tileCoordsToMapPoint, tileZoomToSize } from './geo';
 import { Sample, TileCoords, Metadata, Point, Palette } from './types';
 
@@ -51,10 +51,16 @@ module.exports = function generateTile(
                 const sample = samples[index];
                 const mapPoint = sample.mapPoint;
 
-                const distanceSquared =
-                    (x - mapPoint[0]) * (x - mapPoint[0]) + (y - mapPoint[1]) * (y - mapPoint[1]);
+                const dx = x - mapPoint[0];
+                const dy = y - mapPoint[1];
 
-                const weight = 1 / distanceSquared;
+                const distanceSquared = dx * dx + dy * dy;
+                const distancePowered =
+                    (power as number) === 2
+                        ? distanceSquared
+                        : Math.pow(distanceSquared, power / 2);
+
+                const weight = 1 / distancePowered;
 
                 numerator += weight * sample.value;
                 denominator += weight;
