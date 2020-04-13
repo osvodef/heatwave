@@ -3,6 +3,10 @@ import { Bound } from './bound';
 import { paletteSize, discrete } from './settings';
 import { Sample, Metadata, Range } from './types';
 
+/**
+ * Вычисляет некоторые метаданные для переданных данных: баунды в географических
+ * и мап-координатах, а также набор кластеров, используемых для раскраски.
+ */
 export function calcMetadata(samples: Sample[]): Metadata {
     const values = samples.map((sample) => sample.value);
 
@@ -26,9 +30,14 @@ export function calcMetadata(samples: Sample[]): Metadata {
         }
     }
 
+    // Для непрерывного режима кластеров нужно на 1 меньше, чем цветов в палитре
+    // Для дискретного количество должно совпадать.
     const clusterCount = discrete ? paletteSize : paletteSize - 1;
 
+    // Кластеризуем значения методом k-средних.
     const centroids = (skmeans(values, clusterCount).centroids as unknown) as number[];
+
+    // Библиотека возвращает центры диапазонов, а нам нужны их границы, рассчитаем их.
     const clusters = calcRanges(centroids, valueRange);
 
     return { clusters, geoBound, mapBound };

@@ -12,8 +12,8 @@ import { dataFile, zoomRange, colorScale, paletteSize, gamma, reverse } from './
 
 const workers = farm(require.resolve('./generate'));
 
+// Загружаем и парсим CSV.
 const csv = fs.readFileSync(path.join(__dirname, '..', 'data', dataFile), 'utf8');
-
 const samples: Sample[] = parse(csv, { columns: true }).map((record: any) => {
     const geoPoint: Point = [Number(record['Longitude']), Number(record['Latitude'])];
     const mapPoint = projectGeoToMap(geoPoint);
@@ -22,9 +22,16 @@ const samples: Sample[] = parse(csv, { columns: true }).map((record: any) => {
     return { value, geoPoint, mapPoint };
 });
 
+// Вычисляем метаданные.
 const metadata = calcMetadata(samples);
+
+// Получаем список тайлов для генерации.
 const tileList = calcTileList(metadata.mapBound, zoomRange);
+
+// Генерим палитру по параметрам.
 const palette = createPalette(colorScale, paletteSize, gamma, reverse);
+
+// Генерим превью-страницу.
 const html = generatePreviewHtml(metadata, palette);
 
 console.log(`Starting tile generation. Tiles to generate: ${tileList.length}.\n`);
@@ -33,6 +40,7 @@ const startTime = Date.now();
 let generatedTileCount = 0;
 
 for (const coords of tileList) {
+    // Раскидываем по воркерам задачи на генерацию тайлов.
     workers(samples, coords, metadata, palette, () => {
         generatedTileCount++;
 

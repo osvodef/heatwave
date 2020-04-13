@@ -1,6 +1,9 @@
 import { Metadata, Range, Palette } from './types';
 import { zoomRange, opacity, discrete } from './settings';
 
+/**
+ * Генерит превью-страницу хитмапа с правильным положением карты и легендой.
+ */
 export function generatePreviewHtml(metadata: Metadata, palette: Palette): string {
     const { geoBound, clusters } = metadata;
     const boundString = `[[${geoBound.min[1]}, ${geoBound.min[0]}], [${geoBound.max[1]}, ${geoBound.max[0]}]]`;

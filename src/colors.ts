@@ -1,6 +1,9 @@
 import { Palette, RGB, d3ColorScale, Range } from './types';
 import * as d3 from 'd3-scale-chromatic';
 
+/**
+ * Создаёт палитру (массив цветов) из d3-интерполятора.
+ */
 export function createPalette(
     d3ScaleName: d3ColorScale,
     size: number,
@@ -35,23 +38,26 @@ export function getColorFromPalette(
     value: number,
     discrete: boolean,
 ): RGB {
+    // Крайние случаи
     if (value < clusters[0].min) {
         return palette[0];
     }
-
     if (value > clusters[clusters.length - 1].max) {
         return palette[palette.length - 1];
     }
 
+    // Определяем кластер, в который попадает переданное значение
     let clusterIndex = 0;
     while (value < clusters[clusterIndex].min || value > clusters[clusterIndex].max) {
         clusterIndex++;
     }
 
+    // В дискретном режиме просто берём цвет из палитры для кластера
     if (discrete) {
         return palette[clusterIndex];
     }
 
+    // В непрерывном режиме берём цвета для границ кластера и интерполируем между ними
     const cluster = clusters[clusterIndex];
     const color1 = palette[clusterIndex];
     const color2 = palette[clusterIndex + 1];

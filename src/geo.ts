@@ -2,6 +2,9 @@ import { Bound } from './bound';
 import { degToRad, clamp } from './utils';
 import { TileCoords, Point, Range } from './types';
 
+/**
+ * Вычисляет список тайлов для переданного баунда и набора зумов.
+ */
 export function calcTileList(bound: Bound, zoomRange: Range): TileCoords[] {
     const result: TileCoords[] = [];
 
@@ -26,6 +29,10 @@ export function calcTileList(bound: Bound, zoomRange: Range): TileCoords[] {
     return result;
 }
 
+/**
+ * Мап-координаты в этом проекте инвертированы по оси Y относительно Zenith,
+ * точно так же, как и координаты тайлов.
+ */
 export function projectGeoToMap(geoPoint: Point): Point {
     const worldSize = 4294967296;
     const worldHalf = worldSize / 2;
