@@ -1,5 +1,5 @@
 {
-    "name": "idw",
+    "name": "heatwave",
     "version": "1.0.0",
     "description": "IDW heatmap tileset generator",
     "main": "src/index.ts",
